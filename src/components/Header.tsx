@@ -1,8 +1,8 @@
-import { Info, BookOpen, Layers, ShieldCheck, Activity, User as UserIcon, LogOut } from "lucide-react";
+import { User as UserIcon, LogOut } from "lucide-react";
 import { User } from "firebase/auth";
 
 interface HeaderProps {
-  onShowModal: (modal: "research" | "methodology" | "documentation" | "affiliations" | null) => void;
+  onShowModal: (modal: "research" | "methodology" | "documentation" | "affiliations" | "privacy" | "terms" | "contact" | null) => void;
   user: User | null;
   onSignInClick: () => void;
   onSignOut: () => void;

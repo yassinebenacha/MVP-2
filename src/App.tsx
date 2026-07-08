@@ -4,7 +4,6 @@ import {
   BookOpen,
   X,
   Bot,
-  CheckCircle2,
   FileText,
   BarChart2
 } from "lucide-react";
@@ -25,7 +24,7 @@ export default function App() {
 
 Advertisement: Get premium insurance now! Click here for exclusive deals.
 
-Published on June 2026 by John Doe
+Published on June 2026
 
 Artificial intelligence is transforming healthcare diagnostics by enabling faster image analysis and predictive monitoring.
 
@@ -39,7 +38,7 @@ Researchers show promising results using transformer-based architectures for cli
 
 Cookie policy: We use cookies to improve your experience. Accept or decline below.
 
-AI-powered diagnostic tools reduce misdiagnosis rates by up to 38%, according to a recent multicenter study published in the Lancet.
+AI-powered diagnostic tools can support clinicians by accelerating document review and highlighting relevant information.
 
 Footer: About Us | Privacy Policy | Terms of Service | Contact`;
 
@@ -49,7 +48,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   const [activeStepIndex, setActiveStepIndex] = useState(-1);
   const [cleaningResult, setCleaningResult] = useState<CleaningResult | null>(null);
   const [warning, setWarning] = useState<string | undefined>(undefined);
-  const [activeModal, setActiveModal] = useState<"research" | "methodology" | "documentation" | "affiliations" | null>(null);
+  const [activeModal, setActiveModal] = useState<"research" | "methodology" | "documentation" | "affiliations" | "privacy" | "terms" | "contact" | null>(null);
   
   // Firebase Auth states
   const [user, setUser] = useState<User | null>(null);
@@ -160,8 +159,6 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
         return "Linear SVM";
       case "lr":
         return "Logistic Regression";
-      case "gemini":
-        return "Gemini 3.5 Flash";
       default:
         return "ML Classifier";
     }
@@ -188,7 +185,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-mono mb-4 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-[#ffc000] fill-[#ffc000]" />
-            <span>Supervised ML Text Segment Classifier</span>
+            <span>Academic NLP Cleaning Prototype</span>
           </div>
 
           <h1 className="font-sans font-black text-4xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-6">
@@ -202,7 +199,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
           </h1>
 
           <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Supervised machine learning system that classifies raw text segments into noise or content, removes boilerplate, and reconstructs clean text — ready for NLP pipeline ingestion.
+            NOISECLEANER removes noisy web content by segmenting raw text, encoding each segment with MiniLM, classifying it with Linear SVM or Logistic Regression, and reconstructing clean text for downstream NLP systems.
           </p>
         </div>
       </section>
@@ -255,7 +252,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">Text Segmentation</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Raw input text is split into logical paragraph-level segments, each treated as an independent unit for supervised classification.
+              Raw text is split into paragraph-level segments, each processed independently before embedding and classification.
             </p>
           </div>
 
@@ -265,7 +262,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">MiniLM Embedding</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Each segment is transformed into a 384-dimensional dense semantic vector using the paraphrase-multilingual-MiniLM-L12-v2 model.
+              Each segment is encoded into a 384-dimensional multilingual semantic embedding using paraphrase-multilingual-MiniLM-L12-v2.
             </p>
           </div>
 
@@ -275,7 +272,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">Supervised Classification</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Trained Linear SVM and Logistic Regression models classify each segment as noise or content, achieving over 91% accuracy on held-out test data.
+              Trained Linear SVM and Logistic Regression models classify MiniLM embeddings as Content or Noise while preserving retained segment order.
             </p>
           </div>
         </div>
@@ -293,10 +290,13 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               <div className="flex items-center gap-2">
                 <BookOpen className="text-[#795900] w-5 h-5" />
                 <h3 className="font-sans font-extrabold text-gray-900 uppercase tracking-wide text-xs">
-                  {activeModal === "research" && "Academic Research Context"}
+                  {activeModal === "research" && "Research Context"}
                   {activeModal === "methodology" && "NLP Pipeline Methodology"}
-                  {activeModal === "documentation" && "Developer Integration API Docs"}
-                  {activeModal === "affiliations" && "Research Partners & Affiliations"}
+                  {activeModal === "documentation" && "Technical Documentation"}
+                  {activeModal === "affiliations" && "Affiliations"}
+                  {activeModal === "privacy" && "Privacy Policy"}
+                  {activeModal === "terms" && "Terms of Service"}
+                  {activeModal === "contact" && "Contact"}
                 </h3>
               </div>
               <button
@@ -312,50 +312,74 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               {activeModal === "research" && (
                 <>
                   <p>
-                    <strong>NOISECLEANER</strong> is an academic tool developed at ENIAD Harmony Technology for supervised text segment classification. The system classifies raw text paragraphs as either content or noise, removes boilerplate segments, and reconstructs a clean version of the text.
+                    <strong>NOISECLEANER</strong> is an academic engineering project developed during an internship at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée), Harmony Technology.
                   </p>
                   <p>
-                    By removing noise segments before NLP pipeline ingestion (such as training vector embeddings or fine-tuning transformers), researchers experience up to <strong>14.2% improvements</strong> in vocabulary sparsity and downstream task convergence speed.
+                    The objective is to remove noisy web content such as navigation text, advertisements, subscription prompts, and footer material from raw text collected from web pages.
                   </p>
-                  <div className="bg-gray-50 border border-gray-100 p-4 rounded text-xs font-mono space-y-2">
-                    <p className="font-bold text-gray-900">Reference Citation Format:</p>
-                    <p className="text-gray-700 select-all">
-                      Benacha, Y. et al. "Supervised Text Segment Classification for Noise Removal in NLP Corpora: A Comparative Study of SVM and Logistic Regression." ENIAD Research Report (2026).
-                    </p>
-                  </div>
+                  <p>
+                    Cleaning noisy text improves the quality of downstream NLP workflows by providing more focused input for indexing, embedding generation, classification, summarization, or model training.
+                  </p>
                 </>
               )}
 
               {activeModal === "methodology" && (
                 <>
                   <p>
-                    The pipeline applies a three-stage supervised ML approach to classify and remove noise from raw text:
+                    The implemented pipeline follows the same stages used by the backend prediction service:
                   </p>
                   <div className="space-y-4">
                     <div className="flex gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">1</div>
                       <div>
-                        <strong className="text-gray-900">Text Segmentation:</strong>
+                        <strong className="text-gray-900">Raw Text:</strong>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          The input text is split into paragraph-level segments. Each segment is treated as an independent classification unit.
+                          The system receives raw text extracted from web pages or documents.
                         </p>
                       </div>
                     </div>
                     <div className="flex gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">2</div>
                       <div>
-                        <strong className="text-gray-900">TF-IDF Vectorization:</strong>
+                        <strong className="text-gray-900">Text Segmentation:</strong>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          Each segment is transformed into a TF-IDF feature vector using a fitted vectorizer trained on a labeled corpus of noisy and clean text samples.
+                          The input document is split into paragraph-level text segments. Each segment is processed independently.
                         </p>
                       </div>
                     </div>
                     <div className="flex gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">3</div>
                       <div>
+                        <strong className="text-gray-900">MiniLM Embedding:</strong>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Each segment is encoded into a 384-dimensional multilingual semantic embedding using SentenceTransformer with paraphrase-multilingual-MiniLM-L12-v2.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">4</div>
+                      <div>
                         <strong className="text-gray-900">Supervised Classification:</strong>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          A trained Linear SVM or Logistic Regression model predicts whether each segment is noise or content. Noise segments are filtered out and the remaining content is reconstructed into clean output text.
+                          The generated embeddings are passed to a trained Linear SVM or Logistic Regression classifier. Each segment is classified as Content or Noise.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">5</div>
+                      <div>
+                        <strong className="text-gray-900">Noise Filtering:</strong>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Segments classified as Noise are removed from the output.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center font-mono text-[10px] font-bold text-[#795900] shrink-0">6</div>
+                      <div>
+                        <strong className="text-gray-900">Clean Text Reconstruction:</strong>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Retained Content segments are concatenated in their original order to produce the cleaned document.
                         </p>
                       </div>
                     </div>
@@ -366,7 +390,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               {activeModal === "documentation" && (
                 <>
                   <p>
-                    Integrate NOISECLEANER's automated cleaning models directly into your Python scraping workflows or Node.js crawlers:
+                    The frontend sends raw text and the selected classifier identifier to the cleaning API:
                   </p>
                   <div className="bg-gray-950 text-gray-200 p-4 rounded font-mono text-[11px] overflow-x-auto space-y-1">
                     <p className="text-gray-400"># Run extraction via REST API</p>
@@ -378,22 +402,38 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                     <p>  {"}"}'</p>
                   </div>
                   <p className="text-xs text-gray-400">
-                    Returns structured JSON containing total segments, classified lines, confidence ratios, and the fully consolidated clean corpus.
+                    The API returns paragraph-level segments, Content/Noise predictions, confidence scores when available, aggregate metrics, and the reconstructed clean text.
                   </p>
                 </>
               )}
 
               {activeModal === "affiliations" && (
                 <div className="space-y-4">
-                  <p>
-                    This project is maintained in collaboration with global partners dedicated to linguistic corpus preservation and machine translation dataset cleaning:
-                  </p>
                   <ul className="list-disc pl-5 space-y-1.5 text-xs">
-                    <li><strong>ENIAD Harmony Technology</strong> (Linguistic Research Lab)</li>
-                    <li>Global Computational Corpus Association (GCCA)</li>
-                    <li>Joint Academic Consortium for Web Mining Operations</li>
+                    <li><strong>Harmony Technology</strong></li>
+                    <li><strong>CEIRA</strong> (Centre d'Excellence en Innovation et Recherche Appliquée)</li>
                   </ul>
                 </div>
+              )}
+
+              {activeModal === "privacy" && (
+                <ul className="list-disc pl-5 space-y-1.5 text-xs">
+                  <li>Uploaded text is processed for prediction.</li>
+                  <li>No personal data is intentionally collected.</li>
+                  <li>User content is not permanently stored.</li>
+                </ul>
+              )}
+
+              {activeModal === "terms" && (
+                <p>
+                  This software is an academic engineering prototype developed during an internship at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée). It is intended exclusively for research, demonstration, and educational purposes.
+                </p>
+              )}
+
+              {activeModal === "contact" && (
+                <p>
+                  For project-related questions, contact Harmony Technology or CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée), Harmony Technology.
+                </p>
               )}
             </div>
 

@@ -1,4 +1,4 @@
-import { CheckCircle, Play, Cpu, Trophy, ShieldCheck } from "lucide-react";
+import { CheckCircle, Play, Cpu } from "lucide-react";
 import { ModelOption } from "../types";
 
 interface ModelSelectionProps {
@@ -19,9 +19,8 @@ export default function ModelSelection({
       id: "svm",
       name: "Linear SVM",
       description:
-        "High-precision linear decision boundary classifier trained on MiniLM semantic vectors for fast and deterministic segment classification.",
-      accuracy: 91.03,
-      badge: "Fast & Deterministic",
+        "Linear decision boundary classifier trained on MiniLM semantic vectors for deterministic segment classification.",
+      badge: "Deterministic Classifier",
       details:
         "Finds the optimal hyperplane that maximally separates noise from content segments in the MiniLM vector space.",
     },
@@ -29,22 +28,10 @@ export default function ModelSelection({
       id: "lr",
       name: "Logistic Regression",
       description:
-        "Probabilistic supervised classifier that outputs calibrated confidence scores for each text segment classification decision.",
-      accuracy: 91.72,
-      badge: "Best Model",
+        "Supervised classifier trained on MiniLM semantic embeddings that provides prediction scores for each text segment.",
+      badge: "Probability Scores",
       details:
-        "Outputs continuous probability weights that allow fine-grained confidence scoring per segment.",
-      isBestModel: true,
-    },
-    {
-      id: "gemini",
-      name: "Gemini 3.5 Flash (LLM)",
-      description:
-        "Zero-shot semantic content extraction utilizing advanced contextual neural reasoning.",
-      accuracy: 98,
-      badge: "Hybrid Context Aware",
-      details:
-        "Best for highly unstructured layouts, parsing complex document relationships without rules.",
+        "Uses the 384-dimensional MiniLM vector space to assign Content or Noise predictions per segment.",
     },
   ];
 
@@ -64,11 +51,7 @@ export default function ModelSelection({
               onClick={() => onSelectModel(m.id)}
               className={`border rounded p-4 cursor-pointer relative transition-all ${
                 isActive
-                  ? m.isBestModel
-                    ? "border-2 border-[#ffc000] bg-[#fffdf5] shadow-[0_0_12px_2px_rgba(255,192,0,0.18)]"
-                    : "border-2 border-[#ffc000] bg-[#fffdf5] shadow-sm"
-                  : m.isBestModel
-                  ? "border-2 border-[#ffc000]/40 hover:border-[#ffc000] hover:bg-[#fffdf5]/60"
+                  ? "border-2 border-[#ffc000] bg-[#fffdf5] shadow-sm"
                   : "border-gray-200 hover:border-black hover:bg-gray-50"
               }`}
             >
@@ -78,23 +61,14 @@ export default function ModelSelection({
                 </div>
               )}
 
-              {/* Model name + best badge */}
+              {/* Model name */}
               <div className="flex items-center gap-2 pr-8">
                 <h3 className="font-sans font-bold text-sm text-gray-900">{m.name}</h3>
-                {m.isBestModel && (
-                  <span className="inline-flex items-center gap-1 bg-[#ffc000] text-black px-2 py-0.5 rounded-full font-bold text-[10px] font-mono shadow-sm">
-                    <Trophy className="w-2.5 h-2.5 fill-current" />
-                    Best Model
-                  </span>
-                )}
               </div>
               <p className="text-xs text-gray-500 mt-1 font-sans">{m.description}</p>
 
-              {/* Accuracy badge only */}
+              {/* Model metadata badges */}
               <div className="mt-3 flex flex-wrap gap-2 items-center">
-                <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-mono text-[10px] font-bold border border-gray-200">
-                  Accuracy: {m.accuracy.toFixed(2)}%
-                </span>
                 <span className="bg-[#ffdf9e] text-[#5b4300] px-2 py-0.5 rounded font-mono text-[10px] font-bold">
                   {m.badge}
                 </span>
@@ -109,16 +83,6 @@ export default function ModelSelection({
           );
         })}
       </div>
-
-      {/* Warning/Info banner for Gemini */}
-      {selectedModel === "gemini" && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded text-xs text-blue-800 flex gap-2">
-          <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
-          <div>
-            <span className="font-bold">Server-Side Proxy Active:</span> Gemini operations run securely on the server. Your API key remains private. If no key is set, the system automatically falls back to the Linear SVM model.
-          </div>
-        </div>
-      )}
 
       {/* Run button */}
       <button

@@ -17,7 +17,7 @@ export default function RawInput({ text, onChangeText, onSelectTemplate }: RawIn
 
 Advertisement: Get premium insurance now! Click here for exclusive deals.
 
-Published on June 2026 by John Doe
+Published on June 2026
 
 Artificial intelligence is transforming healthcare diagnostics by enabling faster image analysis and predictive monitoring.
 
@@ -31,7 +31,7 @@ Researchers show promising results using transformer-based architectures for cli
 
 Cookie policy: We use cookies to improve your experience. Accept or decline below.
 
-AI-powered diagnostic tools reduce misdiagnosis rates by up to 38%, according to a recent multicenter study published in the Lancet.
+AI-powered diagnostic tools can support clinicians by accelerating document review and highlighting relevant information.
 
 Footer: About Us | Privacy Policy | Terms of Service | Contact`,
 
@@ -61,23 +61,23 @@ Mentions légales | Politique de confidentialité | Contact`,
 
 Advertisement: Join our premium research subscription today!
 
-By Dr. Ahmed Benacha, ENIAD Research Lab
+Prepared for an academic NLP engineering prototype
 
 The field of natural language processing has seen remarkable advances in the past year, with transformer-based models achieving near-human performance on several benchmark tasks.
 
 Newsletter signup: Stay updated with our weekly NLP digest. Enter your email below.
 
-Supervised learning approaches continue to outperform unsupervised baselines on domain-specific classification tasks, particularly when labeled training data is available.
+Supervised learning approaches are useful for domain-specific classification tasks when labeled training data is available.
 
-Support vector machines with TF-IDF features remain competitive for text classification, especially in resource-constrained environments where inference latency is critical.
+Support vector machines trained on MiniLM semantic embeddings remain competitive for segment classification, especially in resource-constrained environments where inference latency is critical.
 
 Related posts:
-Comparing BERT vs SVM for news categorization.
+Comparing MiniLM embeddings with supervised classifiers for noisy corpus cleaning.
 How to build a text cleaning pipeline from scratch.
 
-Logistic regression models provide interpretable probability scores that are valuable for downstream decision-making in clinical and legal NLP applications.
+Logistic regression models trained on 384-dimensional multilingual embeddings provide interpretable confidence scores that are valuable for downstream decision-making in clinical and legal NLP applications.
 
-Copyright 2026 ENIAD Harmony Technology. All rights reserved.`,
+Copyright 2026 Harmony Technology. All rights reserved.`,
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -193,7 +193,7 @@ Copyright 2026 ENIAD Harmony Technology. All rights reserved.`,
 
       <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400 font-mono">
         <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
-        <span>Each paragraph is treated as one text segment for classification.</span>
+        <span>Each paragraph is embedded with MiniLM, then classified as Content or Noise.</span>
       </div>
     </div>
   );

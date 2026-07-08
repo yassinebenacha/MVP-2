@@ -24,7 +24,6 @@ export interface ModelOption {
   id: string;
   name: string;
   description: string;
-  accuracy: number; // e.g. 91.03
   badge: string;
   details: string;
   isBestModel?: boolean;

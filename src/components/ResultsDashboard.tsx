@@ -21,7 +21,7 @@ export default function ResultsDashboard({
         <AlertTriangle className="w-8 h-8 text-gray-300 mb-3" />
         <h3 className="font-sans font-bold text-gray-700 text-sm">No Pipeline Results Available</h3>
         <p className="text-xs text-gray-400 font-mono mt-1 max-w-md">
-          Paste noisy raw text in the left panel, select a classification model on the right, and click "Run Cleaning Pipeline" to classify and clean your text segments.
+          Paste noisy raw text in the left panel, select a MiniLM-backed classifier on the right, and click "Run Cleaning Pipeline" to classify and clean your text segments.
         </p>
       </div>
     );
@@ -161,7 +161,7 @@ export default function ResultsDashboard({
                 Clean Reconstructed Text
               </h3>
               <span className="text-[10px] text-gray-400 font-mono mt-0.5">
-                Ready for tokenization & NLP pipeline feeding
+                Retained in original order for tokenization and NLP pipeline feeding
               </span>
             </div>
             <div className="flex gap-2">

@@ -1,6 +1,0 @@
-{
-  "name": "Noise Cleaner",
-  "description": "Automatic web noise cleaning and content extraction tool for NLP pipelines, utilizing machine learning and generative models.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
