@@ -34,6 +34,7 @@ EXPOSE 3000
 
 # Copy and set execution permissions on the startup script
 COPY start.sh /app/start.sh
+RUN sed -i 's/\r$//' /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Start the application
