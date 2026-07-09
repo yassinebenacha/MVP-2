@@ -14,14 +14,20 @@ RUN pip install --no-cache-dir -r requirements.txt
 # This prevents slow startup and network timeouts on deployment.
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')"
 
-# Install Node packages
+# Install Node packages (including devDependencies needed for building)
 RUN npm ci
 
 # Copy the rest of the application code
 COPY . .
 
-# Build the React frontend and compile server.ts to dist/server.cjs
+# Build the React frontend and compile server.ts to build-server/server.cjs
 RUN npm run build
+
+# Prune devDependencies to reduce container size
+RUN npm prune --omit=dev
+
+# Set production environment variable for runtime
+ENV NODE_ENV=production
 
 # Expose Express server default port (Render will override this via the PORT environment variable)
 EXPOSE 3000
