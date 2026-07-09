@@ -1,3 +1,4 @@
+import os
 import joblib
 from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, HTTPException
@@ -6,10 +7,15 @@ import numpy as np
 
 app = FastAPI(title="NoiseCleaner ML API")
 
+# Resolve model paths relative to this script's directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LR_MODEL_PATH = os.path.join(BASE_DIR, "models", "logistic_regression_model.pkl")
+SVM_MODEL_PATH = os.path.join(BASE_DIR, "models", "linear_svm_model.pkl")
+
 print("Loading models...")
 try:
-    lr_model = joblib.load("models/logistic_regression_model.pkl")
-    svm_model = joblib.load("models/linear_svm_model.pkl")
+    lr_model = joblib.load(LR_MODEL_PATH)
+    svm_model = joblib.load(SVM_MODEL_PATH)
     embedder = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
     print("Models loaded successfully!")
 except Exception as e:

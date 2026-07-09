@@ -1,7 +1,9 @@
 import json
 import re
+import os
 
-nb = json.load(open(r'c:\Users\yssin\Downloads\MVP 2\noisecleaner_pipeline.ipynb', encoding='utf-8'))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+nb = json.load(open(os.path.join(BASE_DIR, 'noisecleaner_pipeline.ipynb'), encoding='utf-8'))
 src = ''.join(sum([c.get('source', []) for c in nb['cells']], []))
 m = re.search(r'MODEL_NAME\s*=\s*[\'"](.*?)[\'"]', src)
 if m:

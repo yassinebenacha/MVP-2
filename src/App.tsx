@@ -185,7 +185,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-mono mb-4 shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-[#ffc000] fill-[#ffc000]" />
-            <span>Academic NLP Cleaning Prototype</span>
+            <span>NLP Preprocessing</span>
           </div>
 
           <h1 className="font-sans font-black text-4xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-6">
@@ -199,7 +199,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
           </h1>
 
           <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            NOISECLEANER removes noisy web content by segmenting raw text, encoding each segment with MiniLM, classifying it with Linear SVM or Logistic Regression, and reconstructing clean text for downstream NLP systems.
+            Segment raw web text, encode with MiniLM, classify with Linear SVM or Logistic Regression, and reconstruct clean text for downstream NLP systems.
           </p>
         </div>
       </section>
@@ -252,7 +252,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">Text Segmentation</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Raw text is split into paragraph-level segments, each processed independently before embedding and classification.
+              Raw text is split into paragraph-level segments, each processed independently through embedding and classification.
             </p>
           </div>
 
@@ -262,7 +262,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">MiniLM Embedding</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Each segment is encoded into a 384-dimensional multilingual semantic embedding using paraphrase-multilingual-MiniLM-L12-v2.
+              Each segment is encoded into a 384-dimensional semantic vector using paraphrase-multilingual-MiniLM-L12-v2.
             </p>
           </div>
 
@@ -272,7 +272,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">Supervised Classification</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Trained Linear SVM and Logistic Regression models classify MiniLM embeddings as Content or Noise while preserving retained segment order.
+              Linear SVM and Logistic Regression classifiers separate Content from Noise segments in the MiniLM embedding space.
             </p>
           </div>
         </div>
@@ -312,13 +312,13 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               {activeModal === "research" && (
                 <>
                   <p>
-                    <strong>NOISECLEANER</strong> is an academic engineering project developed during an internship at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée), Harmony Technology.
+                    <strong>NOISECLEANER</strong> is a text cleaning application developed at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée). It removes noisy web content navigation text, advertisements, subscription prompts, and boilerplate from raw text collected via web scraping.
                   </p>
                   <p>
-                    The objective is to remove noisy web content such as navigation text, advertisements, subscription prompts, and footer material from raw text collected from web pages.
+                    Web-scraped text typically contains structural noise that degrades the performance of NLP systems. NOISECLEANER addresses this by classifying each text segment as Content or Noise using supervised machine learning on multilingual MiniLM embeddings.
                   </p>
                   <p>
-                    Cleaning noisy text improves the quality of downstream NLP workflows by providing more focused input for indexing, embedding generation, classification, summarization, or model training.
+                    Clean text output can be used directly in indexing, embedding generation, classification, summarization, and model training pipelines.
                   </p>
                 </>
               )}
@@ -386,32 +386,38 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                   </div>
                 </>
               )}
-
               {activeModal === "documentation" && (
                 <>
-                  <p>
-                    The frontend sends raw text and the selected classifier identifier to the cleaning API:
-                  </p>
-                  <div className="bg-gray-950 text-gray-200 p-4 rounded font-mono text-[11px] overflow-x-auto space-y-1">
-                    <p className="text-gray-400"># Run extraction via REST API</p>
-                    <p>curl -X POST "{window.location.origin}/api/clean" \</p>
-                    <p>  -H "Content-Type: application/json" \</p>
-                    <p>  -d '{"{"}</p>
-                    <p>    "text": "&lt;nav&gt;Menu&lt;/nav&gt;&lt;p&gt;Main Article Content&lt;/p&gt;",</p>
-                    <p>    "model": "svm"</p>
-                    <p>  {"}"}'</p>
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-sans font-bold text-xs text-gray-900 uppercase tracking-wider mb-1">Endpoint</h4>
+                      <code className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-mono">POST /api/clean</code>
+                    </div>
+                    <div>
+                      <h4 className="font-sans font-bold text-xs text-gray-900 uppercase tracking-wider mb-1">Request Body</h4>
+                      <div className="bg-gray-950 text-gray-200 p-3 rounded font-mono text-[11px] overflow-x-auto">
+                        <pre>{`{\n  "text": "<raw text content>",\n  "model": "svm" | "lr"\n}`}</pre>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-sans font-bold text-xs text-gray-900 uppercase tracking-wider mb-1">Response</h4>
+                      <div className="bg-gray-950 text-gray-200 p-3 rounded font-mono text-[11px] overflow-x-auto">
+                        <pre>{`{\n  "segments": [{ "id", "text", "isNoise", "score", "type" }],\n  "cleanedText": "<reconstructed content>",\n  "metrics": { "totalSegments", "noiseRemoved", "contentRetained", "cleaningRatio" }\n}`}</pre>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-400">
-                    The API returns paragraph-level segments, Content/Noise predictions, confidence scores when available, aggregate metrics, and the reconstructed clean text.
+                  <p className="text-xs text-gray-400 mt-2">
+                    The <code className="bg-gray-100 px-1 rounded">model</code> parameter accepts <code className="bg-gray-100 px-1 rounded">"svm"</code> (Linear SVM) or <code className="bg-gray-100 px-1 rounded">"lr"</code> (Logistic Regression).
                   </p>
                 </>
               )}
 
               {activeModal === "affiliations" && (
                 <div className="space-y-4">
+                  <p className="text-xs text-gray-500">This project was developed within the following organizations:</p>
                   <ul className="list-disc pl-5 space-y-1.5 text-xs">
-                    <li><strong>Harmony Technology</strong></li>
-                    <li><strong>CEIRA</strong> (Centre d'Excellence en Innovation et Recherche Appliquée)</li>
+                    <li><strong>Harmony Technology</strong> Host company</li>
+                    <li><strong>CEIRA</strong> (Centre d'Excellence en Innovation et Recherche Appliquée) R&D center</li>
                   </ul>
                 </div>
               )}
@@ -426,14 +432,18 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
 
               {activeModal === "terms" && (
                 <p>
-                  This software is an academic engineering prototype developed during an internship at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée). It is intended exclusively for research, demonstration, and educational purposes.
+                  This software is an engineering project developed during an internship at Harmony Technology within CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée). It is provided for research and demonstration purposes.
                 </p>
               )}
 
               {activeModal === "contact" && (
-                <p>
-                  For project-related questions, contact Harmony Technology or CEIRA (Centre d'Excellence en Innovation et Recherche Appliquée), Harmony Technology.
-                </p>
+                <div className="space-y-2">
+                  <p>For questions related to this project, please contact:</p>
+                  <ul className="list-disc pl-5 space-y-1 text-xs">
+                    <li><strong>Harmony Technology</strong></li>
+                    <li><strong>CEIRA</strong> (Centre d'Excellence en Innovation et Recherche Appliquée)</li>
+                  </ul>
+                </div>
               )}
             </div>
 
@@ -443,7 +453,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                 onClick={() => setActiveModal(null)}
                 className="bg-black hover:bg-gray-800 text-white font-bold px-4 py-2 rounded text-xs transition-all"
               >
-                Close Panel
+                Close
               </button>
             </div>
           </div>

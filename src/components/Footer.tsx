@@ -21,7 +21,7 @@ export default function Footer({ onShowModal }: FooterProps) {
             NOISE<span className="text-[#ffc000]">CLEANER</span>
           </div>
           <div className="text-xs text-gray-400 font-mono">
-            Academic NLP Cleaning Platform
+            NLP Preprocessing
           </div>
           <div className="text-[10px] text-gray-400 font-mono">
             Developed during an engineering internship at Harmony Technology
@@ -54,7 +54,7 @@ export default function Footer({ onShowModal }: FooterProps) {
         <div className="font-sans text-xs text-gray-400 text-center md:text-right">
           © 2026 Harmony Technology
           <div className="text-[10px] mt-1 text-gray-300 font-mono">
-            CEIRA R&amp;D internship prototype
+            CEIRA — Harmony Technology
           </div>
         </div>
       </div>

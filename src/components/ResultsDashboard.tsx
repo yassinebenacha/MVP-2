@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Check, Download, AlertTriangle } from "lucide-react";
+import { Copy, Check, Download, AlertTriangle, Layers } from "lucide-react";
 import { CleaningResult, Segment } from "../types";
 
 interface ResultsDashboardProps {
@@ -18,10 +18,10 @@ export default function ResultsDashboard({
   if (!result) {
     return (
       <div id="results-placeholder" className="border border-dashed border-gray-200 bg-gray-50 rounded-md p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
-        <AlertTriangle className="w-8 h-8 text-gray-300 mb-3" />
-        <h3 className="font-sans font-bold text-gray-700 text-sm">No Pipeline Results Available</h3>
+        <Layers className="w-8 h-8 text-gray-300 mb-3" />
+        <h3 className="font-sans font-bold text-gray-700 text-sm">No Results Yet</h3>
         <p className="text-xs text-gray-400 font-mono mt-1 max-w-md">
-          Paste noisy raw text in the left panel, select a MiniLM-backed classifier on the right, and click "Run Cleaning Pipeline" to classify and clean your text segments.
+          Paste raw text, select a classifier, and run the pipeline to see results.
         </p>
       </div>
     );
@@ -161,7 +161,7 @@ export default function ResultsDashboard({
                 Clean Reconstructed Text
               </h3>
               <span className="text-[10px] text-gray-400 font-mono mt-0.5">
-                Retained in original order for tokenization and NLP pipeline feeding
+                Content segments retained in original order
               </span>
             </div>
             <div className="flex gap-2">

@@ -193,7 +193,7 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
 
       <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400 font-mono">
         <HelpCircle className="w-3.5 h-3.5 text-gray-400" />
-        <span>Each paragraph is embedded with MiniLM, then classified as Content or Noise.</span>
+        <span>Each paragraph is encoded with MiniLM and classified as Content or Noise.</span>
       </div>
     </div>
   );

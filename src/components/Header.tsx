@@ -21,7 +21,7 @@ export default function Header({ onShowModal, user, onSignInClick, onSignOut }: 
             NOISE<span className="text-[#ffc000]">CLEANER</span>
           </span>
           <span className="hidden md:inline bg-gray-100 text-gray-600 font-mono text-[10px] px-2 py-0.5 rounded border border-gray-200 ml-2">
-            v2.1
+            v2.0
           </span>
         </div>
 

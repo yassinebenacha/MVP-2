@@ -8,7 +8,7 @@ import { createServer as createViteServer } from "vite";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 
 // Set up JSON parsing with a generous size limit for large scraped HTML texts
 app.use(express.json({ limit: "50mb" }));
@@ -296,7 +296,8 @@ Your response must be ONLY valid JSON containing the specified keys. Avoid any i
 
     // Local Python ML models: svm or lr
     try {
-      const pythonResponse = await fetch("http://127.0.0.1:8000/predict", {
+      const pythonUrl = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
+      const pythonResponse = await fetch(`${pythonUrl}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, model: selectedModel })

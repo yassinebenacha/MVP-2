@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: noisecleaner
+    runtime: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # Set this value in the Render dashboard if using Gemini
+      - key: NODE_ENV
+        value: production
+      - key: PYTHON_API_URL
+        value: http://127.0.0.1:8000

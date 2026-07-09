@@ -34,7 +34,7 @@ export default function PipelineVisualization({
             Processing Pipeline
           </h2>
           <p className="text-xs text-gray-500 font-mono mt-0.5">
-            Sequential stages of the ML text cleaning pipeline
+            Segmentation → MiniLM Embedding → Classification → Filtering → Reconstruction
           </p>
         </div>
         {isProcessing && (

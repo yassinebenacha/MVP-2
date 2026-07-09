@@ -94,8 +94,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </h3>
           <p className="text-xs text-gray-500 font-sans mt-1">
             {isSignUp
-              ? "Register to save your NLP cleaning models and custom corpora."
-              : "Sign in to access the NOISECLEANER console."}
+              ? "Create an account to access NOISECLEANER."
+              : "Sign in to your account."}
           </p>
         </div>
 
