@@ -20,7 +20,7 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Build the React frontend and compile server.ts to build-server/server.cjs
+# Compile the Express gateway to build-server/server.cjs
 RUN npm run build
 
 # Prune devDependencies to reduce container size

@@ -9,6 +9,7 @@ export OMP_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 export TORCH_NUM_THREADS=1
 export TOKENIZERS_PARALLELISM=false
+export PYTHON_API_URL=${PYTHON_API_URL:-http://127.0.0.1:8000}
 
 # Start FastAPI Python backend in the background on loopback.
 # --workers 1: prevents duplicate model loading across worker processes.

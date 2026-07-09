@@ -10,6 +10,7 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
+    "types": ["vite/client"],
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -17,10 +18,15 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src",
+    "firebase.ts",
+    "vite.config.ts"
+  ]
 }

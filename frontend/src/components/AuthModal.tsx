@@ -3,7 +3,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
 } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { auth } from "../../firebase";
 import { X, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
 
 interface AuthModalProps {

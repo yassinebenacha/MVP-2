@@ -1,11 +1,16 @@
 node_modules/
 build/
 dist/
+build-server/
 coverage/
+.vite/
 .DS_Store
 *.log
+.docker-tmp/
 .env*
 !.env.example
+!frontend/.env.example
+!backend/.env.example
 
 # Python
 __pycache__/

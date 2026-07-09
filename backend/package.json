@@ -1,0 +1,28 @@
+{
+  "name": "noisecleaner-backend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "dev:api": "uvicorn api:app --host 127.0.0.1 --port 8000",
+    "dev:all": "npx concurrently \"npm run dev\" \"npm run dev:api\"",
+    "build": "esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=build-server/server.cjs",
+    "start": "node build-server/server.cjs",
+    "clean": "node -e \"import('node:fs').then(fs=>fs.rmSync('build-server',{recursive:true,force:true}))\"",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2"
+  }
+}

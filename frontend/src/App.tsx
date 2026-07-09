@@ -8,7 +8,7 @@ import {
   BarChart2
 } from "lucide-react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { auth } from "./lib/firebase";
+import { auth } from "../firebase";
 import AuthModal from "./components/AuthModal";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -17,6 +17,8 @@ import ModelSelection from "./components/ModelSelection";
 import PipelineVisualization from "./components/PipelineVisualization";
 import ResultsDashboard from "./components/ResultsDashboard";
 import { CleaningResult } from "./types";
+
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 export default function App() {
   // Setup the default test corpus in the raw text area
@@ -113,7 +115,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
     }, 400);
 
     try {
-      const response = await fetch("/api/clean", {
+      const response = await fetch(`${API_BASE_URL}/api/clean`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
