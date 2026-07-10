@@ -18,7 +18,10 @@ import PipelineVisualization from "./components/PipelineVisualization";
 import ResultsDashboard from "./components/ResultsDashboard";
 import { CleaningResult } from "./types";
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "http://localhost:3000" : "")
+).replace(/\/$/, "");
 
 export default function App() {
   // Setup the default test corpus in the raw text area
