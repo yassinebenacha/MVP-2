@@ -86,7 +86,7 @@ export default function Header({ onShowModal, user, onSignInClick, onSignOut }: 
                 title="View account and history"
               >
                 <UserIcon className="w-3.5 h-3.5 text-gray-400" />
-                <span>{user.email}</span>
+                <span>My Account</span>
               </button>
               
               <button

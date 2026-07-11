@@ -430,7 +430,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                   {activeModal === "privacy" && "Privacy Policy"}
                   {activeModal === "terms" && "Terms of Service"}
                   {activeModal === "contact" && "Contact"}
-                  {activeModal === "clearHistory" && "Clear Analysis History"}
+                  {activeModal === "clearHistory" && "Delete Analysis History"}
                 </h3>
               </div>
               <button
@@ -584,10 +584,10 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               {activeModal === "clearHistory" && (
                 <div className="space-y-3 font-sans">
                   <p className="text-sm text-gray-700">
-                    Are you sure you want to clear your entire analysis history? This action is permanent and cannot be undone.
+                    Are you sure you want to delete your entire analysis history? This action is permanent and cannot be undone.
                   </p>
                   <div className="p-3 bg-amber-50 border border-amber-100 rounded text-xs text-amber-800">
-                    Note: Only your saved metadata history log will be cleared. Raw input text and clean output documents are never stored in our systems.
+                    Note: Only your saved metadata history log will be deleted. Raw input text and clean output documents are never stored in our systems.
                   </div>
                 </div>
               )}
@@ -607,7 +607,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                     onClick={handleClearHistory}
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none cursor-pointer shadow-sm hover:shadow"
                   >
-                    Clear All
+                    Delete All
                   </button>
                 </>
               ) : (

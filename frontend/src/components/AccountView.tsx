@@ -192,7 +192,7 @@ export default function AccountView({
               onClick={onTriggerClearHistoryModal}
               className="text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 hover:bg-red-50 text-xs px-3 py-1.5 rounded transition-all focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none cursor-pointer font-bold"
             >
-              Clear All History
+              Delete All History
             </button>
           )}
         </div>
@@ -240,33 +240,14 @@ export default function AccountView({
                       <td className="py-3.5 px-2 text-right font-mono text-gray-600">{item.segmentCount}</td>
                       <td className="py-3.5 px-2 text-right font-mono font-bold text-[#795900]">{item.cleaningRatio}%</td>
                       <td className="py-3.5 px-2 text-center">
-                        {deletingId === item.id ? (
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              disabled={isDeletingItem}
-                              onClick={() => handleDeleteItem(item.id)}
-                              className="text-red-600 hover:underline font-bold text-[10px] px-1 disabled:opacity-50"
-                            >
-                              Yes
-                            </button>
-                            <span className="text-gray-300">|</span>
-                            <button
-                              disabled={isDeletingItem}
-                              onClick={() => setDeletingId(null)}
-                              className="text-gray-500 hover:underline font-bold text-[10px] px-1 disabled:opacity-50"
-                            >
-                              No
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setDeletingId(item.id)}
-                            className="text-gray-400 hover:text-red-600 p-1.5 rounded hover:bg-gray-100 transition-colors inline-flex items-center justify-center focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none"
-                            title="Delete this analysis record"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
+                        <button
+                          disabled={isDeletingItem}
+                          onClick={() => handleDeleteItem(item.id)}
+                          className="text-gray-400 hover:text-red-600 p-1.5 rounded hover:bg-gray-100 transition-colors inline-flex items-center justify-center focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:opacity-50"
+                          title="Delete this analysis record"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
                     </tr>
                   );
