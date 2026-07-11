@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword
 } from "firebase/auth";
 import { auth } from "../../firebase";
 import { X, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useToast } from "./Toast";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -18,6 +20,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const modalRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Attach focus trap
+  useFocusTrap(isOpen, modalRef, onClose);
 
   if (!isOpen) return null;
 
@@ -45,8 +53,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
+        toast("Account created successfully!", "success");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
+        toast("Signed in successfully!", "success");
       }
       onClose();
       // Reset form fields
@@ -74,12 +84,20 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs transition-opacity duration-300">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        tabIndex={-1}
+        className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 flex flex-col relative animate-in fade-in zoom-in-95 duration-200 outline-none"
+      >
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded transition-all"
+          className="absolute top-4 right-4 text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
+          aria-label="Close authentication modal"
         >
           <X className="w-5 h-5" />
         </button>
@@ -89,7 +107,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <div className="w-10 h-10 bg-[#ffc000] rounded flex items-center justify-center font-bold text-black text-xl mb-4 shadow-sm">
             N
           </div>
-          <h3 className="font-sans font-black text-2xl text-gray-900 tracking-tight">
+          <h3 id="auth-modal-title" className="font-sans font-black text-2xl text-gray-900 tracking-tight">
             {isSignUp ? "Create your account" : "Welcome back"}
           </h3>
           <p className="text-xs text-gray-500 font-sans mt-1">
@@ -124,7 +142,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50 focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
               />
             </div>
           </div>
@@ -143,7 +161,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50 focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
               />
             </div>
           </div>
@@ -163,7 +181,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-black transition-all bg-gray-50/50 focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
                 />
               </div>
             </div>
@@ -173,7 +191,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#ffc000] hover:bg-[#e6ad00] text-black py-2.5 rounded font-bold hover:shadow uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+            className="w-full bg-[#ffc000] hover:bg-[#e6ad00] text-black py-2.5 rounded font-bold hover:shadow uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2 focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
           >
             {isLoading ? (
               <>
@@ -198,7 +216,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   setIsSignUp(false);
                   setError(null);
                 }}
-                className="text-black font-bold hover:underline"
+                className="text-black font-bold hover:underline focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none rounded px-1"
               >
                 Sign In
               </button>
@@ -211,7 +229,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   setIsSignUp(true);
                   setError(null);
                 }}
-                className="text-black font-bold hover:underline"
+                className="text-black font-bold hover:underline focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none rounded px-1"
               >
                 Create Account
               </button>

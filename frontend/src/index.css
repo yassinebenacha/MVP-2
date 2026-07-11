@@ -19,10 +19,43 @@
     border-right: 2px solid #ffc000;
     animation: blink-caret 0.75s step-end infinite;
   }
+
+  /* Toast Animation utilities */
+  .animate-in {
+    animation-duration: 200ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: forwards;
+  }
+  .slide-in-from-bottom-5 {
+    animation-name: slideInFromBottom;
+  }
+  .fade-in {
+    animation-name: fadeIn;
+  }
 }
 
 @keyframes blink-caret {
   from, to { border-color: transparent }
   50% { border-color: #ffc000; }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(1.25rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 

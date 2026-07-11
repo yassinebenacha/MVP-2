@@ -49,7 +49,16 @@ export default function ModelSelection({
             <div
               key={m.id}
               onClick={() => onSelectModel(m.id)}
-              className={`border rounded p-4 cursor-pointer relative transition-all ${
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelectModel(m.id);
+                }
+              }}
+              role="radio"
+              aria-checked={isActive}
+              tabIndex={0}
+              className={`border rounded p-4 cursor-pointer relative transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none ${
                 isActive
                   ? "border-2 border-[#ffc000] bg-[#fffdf5] shadow-sm"
                   : "border-gray-200 hover:border-black hover:bg-gray-50"

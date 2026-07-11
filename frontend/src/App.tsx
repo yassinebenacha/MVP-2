@@ -17,6 +17,8 @@ import ModelSelection from "./components/ModelSelection";
 import PipelineVisualization from "./components/PipelineVisualization";
 import ResultsDashboard from "./components/ResultsDashboard";
 import { CleaningResult } from "./types";
+import { useToast } from "./components/Toast";
+import { useFocusTrap } from "./hooks/useFocusTrap";
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_URL ||
@@ -59,6 +61,13 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   const [user, setUser] = useState<User | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const { toast } = useToast();
+  const modalContainerRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Hook focus trap for secondary modals
+  useFocusTrap(activeModal !== null, modalContainerRef, () => setActiveModal(null));
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -69,12 +78,12 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   const handleSignOut = async () => {
     try {
       await signOut(auth);
+      toast("Signed out successfully!", "info");
     } catch (err) {
       console.error("Sign out error:", err);
+      toast("An error occurred during sign out.", "error");
     }
   };
-
-  const resultsRef = useRef<HTMLDivElement>(null);
 
   // Trigger typing simulation on banner heading
   const [typedWord, setTypedWord] = useState("Cleaning");
@@ -94,8 +103,20 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
 
   // Run the full NLP data cleaning pipeline
   const handleRunPipeline = async () => {
+    await executePipeline(inputText);
+  };
+
+  const handleRunDemo = async () => {
+    const textToRun = inputText.trim() ? inputText : defaultText;
     if (!inputText.trim()) {
-      alert("Please paste some raw web-scraped content or HTML first.");
+      setInputText(defaultText);
+    }
+    await executePipeline(textToRun);
+  };
+
+  const executePipeline = async (textToProcess: string) => {
+    if (!textToProcess.trim()) {
+      toast("Please paste some raw web-scraped content or HTML first.", "warning");
       return;
     }
 
@@ -103,19 +124,46 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
     setWarning(undefined);
     setCleaningResult(null);
 
-    // Dynamic pipeline step visualization stepping sequence
-    const stepDurations = [300, 400, 450, 500, 350, 200];
-    let step = 0;
+    let currentStep = 0;
     setActiveStepIndex(0);
 
+    let apiResolved = false;
+    let apiError: string | null = null;
+    let apiData: any = null;
+
+    // Step stepping interval - syncs with API resolution
     const stepTimer = setInterval(() => {
-      step++;
-      if (step < stepDurations.length) {
-        setActiveStepIndex(step);
-      } else {
+      if (apiResolved) {
         clearInterval(stepTimer);
+        if (apiError) {
+          setActiveStepIndex(-1);
+          setIsProcessing(false);
+          toast(apiError, "error");
+        } else {
+          // Fast-forward animation to the last step (Clean Output)
+          setActiveStepIndex(5);
+          setTimeout(() => {
+            setActiveStepIndex(-1);
+            setIsProcessing(false);
+            setCleaningResult(apiData);
+            if (apiData?.warning) {
+              setWarning(apiData.warning);
+            }
+            toast("Text cleaning completed successfully!", "success");
+            // Smooth scroll to results panel
+            setTimeout(() => {
+              resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 100);
+          }, 350);
+        }
+      } else {
+        // Hold/pause at classification/noise removal stage if API is still pending
+        if (currentStep < 4) {
+          currentStep++;
+          setActiveStepIndex(currentStep);
+        }
       }
-    }, 400);
+    }, 250);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/clean`, {
@@ -124,37 +172,22 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: inputText,
+          text: textToProcess,
           model: selectedModel,
         }),
       });
 
       const data = await response.json();
 
-      // Wait until the visual step progression finishes or force it to complete
-      setTimeout(() => {
-        clearInterval(stepTimer);
-        setActiveStepIndex(-1);
-        setIsProcessing(false);
-
-        if (response.ok) {
-          setCleaningResult(data);
-          if (data.warning) {
-            setWarning(data.warning);
-          }
-          // Smooth scroll to results panel
-          setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }, 100);
-        } else {
-          alert(data.error || "A server error occurred during cleaning.");
-        }
-      }, 2400); // matching stepDurations sum approximately
+      if (response.ok) {
+        apiData = data;
+      } else {
+        apiError = data.error || "A server error occurred during cleaning.";
+      }
     } catch (error) {
-      clearInterval(stepTimer);
-      setActiveStepIndex(-1);
-      setIsProcessing(false);
-      alert("Could not connect to the pipeline server. Make sure the server is booted.");
+      apiError = "Could not connect to the pipeline server. Make sure the server is booted.";
+    } finally {
+      apiResolved = true;
     }
   };
 
@@ -244,6 +277,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             result={cleaningResult}
             selectedModelName={getModelFriendlyName(selectedModel)}
             warning={warning}
+            onRunDemo={handleRunDemo}
           />
         </div>
       </main>
@@ -267,7 +301,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
             <h4 className="font-sans font-bold text-gray-900 text-sm">MiniLM Embedding</h4>
             <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Each segment is encoded into a 384-dimensional semantic vector using paraphrase-multilingual-MiniLM-L12-v2.
+              Each segment is encoded into a 384-dimensional multilingual semantic embedding using SentenceTransformer with paraphrase-multilingual-MiniLM-L12-v2.
             </p>
           </div>
 
@@ -289,12 +323,19 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
       {/* MODAL DIALOGS */}
       {activeModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-md max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-xl border border-gray-100 flex flex-col">
+          <div
+            ref={modalContainerRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            tabIndex={-1}
+            className="bg-white rounded-md max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-xl border border-gray-100 flex flex-col outline-none animate-in fade-in zoom-in-95 duration-200"
+          >
             {/* Header */}
             <div className="flex justify-between items-center p-4 md:p-5 border-b border-gray-100 sticky top-0 bg-white">
               <div className="flex items-center gap-2">
-                <BookOpen className="text-[#795900] w-5 h-5" />
-                <h3 className="font-sans font-extrabold text-gray-900 uppercase tracking-wide text-xs">
+                <BookOpen className="text-[#795900] w-5 h-5" aria-hidden="true" />
+                <h3 id="modal-title" className="font-sans font-extrabold text-gray-900 uppercase tracking-wide text-xs">
                   {activeModal === "research" && "Research Context"}
                   {activeModal === "methodology" && "NLP Pipeline Methodology"}
                   {activeModal === "documentation" && "Technical Documentation"}
@@ -306,7 +347,8 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
               </div>
               <button
                 onClick={() => setActiveModal(null)}
-                className="text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded"
+                className="text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
+                aria-label="Close modal dialog"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -456,7 +498,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end sticky bottom-0">
               <button
                 onClick={() => setActiveModal(null)}
-                className="bg-black hover:bg-gray-800 text-white font-bold px-4 py-2 rounded text-xs transition-all"
+                className="bg-black hover:bg-gray-800 text-white font-bold px-4 py-2 rounded text-xs transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
               >
                 Close
               </button>

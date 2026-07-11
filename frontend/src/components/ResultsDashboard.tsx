@@ -1,28 +1,40 @@
 import { useState } from "react";
 import { Copy, Check, Download, AlertTriangle, Layers } from "lucide-react";
-import { CleaningResult, Segment } from "../types";
+import { CleaningResult } from "../types";
+import { useToast } from "./Toast";
 
 interface ResultsDashboardProps {
   result: CleaningResult | null;
   selectedModelName: string;
   warning?: string;
+  onRunDemo?: () => void;
 }
 
 export default function ResultsDashboard({
   result,
   selectedModelName,
   warning,
+  onRunDemo,
 }: ResultsDashboardProps) {
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
 
   if (!result) {
     return (
       <div id="results-placeholder" className="border border-dashed border-gray-200 bg-gray-50 rounded-md p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
-        <Layers className="w-8 h-8 text-gray-300 mb-3" />
+        <Layers className="w-8 h-8 text-gray-300 mb-3 animate-pulse" />
         <h3 className="font-sans font-bold text-gray-700 text-sm">No Results Yet</h3>
-        <p className="text-xs text-gray-400 font-mono mt-1 max-w-md">
+        <p className="text-xs text-gray-400 font-mono mt-1 mb-4 max-w-md">
           Paste raw text, select a classifier, and run the pipeline to see results.
         </p>
+        {onRunDemo && (
+          <button
+            onClick={onRunDemo}
+            className="bg-[#ffc000] hover:bg-[#e6ad00] text-black text-xs font-bold px-4.5 py-2 rounded shadow-sm hover:shadow transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
+          >
+            Run Demo Pipeline
+          </button>
+        )}
       </div>
     );
   }
@@ -32,17 +44,23 @@ export default function ResultsDashboard({
   const handleCopy = () => {
     navigator.clipboard.writeText(cleanedText);
     setCopied(true);
+    toast("Cleaned text copied to clipboard!", "success");
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
-    const element = document.createElement("a");
-    const file = new Blob([cleanedText], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = `noisecleaner_output_${Date.now()}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    try {
+      const element = document.createElement("a");
+      const file = new Blob([cleanedText], { type: "text/plain" });
+      element.href = URL.createObjectURL(file);
+      element.download = `noisecleaner_output_${Date.now()}.txt`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      toast("Cleaned text file downloaded successfully!", "success");
+    } catch (err) {
+      toast("Download failed. Please try again.", "error");
+    }
   };
 
   return (
@@ -167,7 +185,7 @@ export default function ResultsDashboard({
             <div className="flex gap-2">
               <button
                 onClick={handleCopy}
-                className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-2.5 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all"
+                className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-2.5 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
                 title="Copy clean text"
               >
                 {copied ? (
@@ -184,7 +202,7 @@ export default function ResultsDashboard({
               </button>
               <button
                 onClick={handleDownload}
-                className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-2.5 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all"
+                className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-2.5 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
                 title="Download text corpus file"
               >
                 <Download className="w-3.5 h-3.5" />

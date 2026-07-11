@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Upload, FileText, HelpCircle } from "lucide-react";
+import { useToast } from "./Toast";
 
 interface RawInputProps {
   text: string;
@@ -10,6 +11,7 @@ interface RawInputProps {
 export default function RawInput({ text, onChangeText, onSelectTemplate }: RawInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { toast } = useToast();
 
   // Plain text corpus templates — no HTML, no DOM, no markup
   const templates = {
@@ -107,10 +109,15 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
   };
 
   const readFile = (file: File) => {
+    if (file.size > 1024 * 1024) {
+      toast("File size exceeds 1MB limit. Please upload a smaller document.", "error");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target && typeof event.target.result === "string") {
         onChangeText(event.target.result);
+        toast("File loaded successfully!", "success");
       }
     };
     reader.readAsText(file);
@@ -127,7 +134,7 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
         <div className="flex gap-2">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-3 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all"
+            className="text-gray-500 hover:text-black hover:bg-gray-50 text-xs px-3 py-1.5 rounded border border-gray-200 flex items-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
           >
             <Upload className="w-3.5 h-3.5" /> Upload File
           </button>
@@ -146,19 +153,19 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
         <span className="text-xs text-gray-400 font-mono">Sample Corpora:</span>
         <button
           onClick={() => onSelectTemplate(templates.standard)}
-          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors"
+          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
         >
           Blog + Ad (Default)
         </button>
         <button
           onClick={() => onSelectTemplate(templates.news)}
-          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors"
+          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
         >
           News Article
         </button>
         <button
           onClick={() => onSelectTemplate(templates.research)}
-          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors"
+          className="text-xs font-semibold bg-gray-100 hover:bg-[#ffdf9e] text-gray-800 px-2 py-1 rounded transition-colors focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
         >
           Research Paper
         </button>
@@ -172,13 +179,13 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
         className={`flex-grow relative rounded border transition-all ${
           isDragging
             ? "border-2 border-[#ffc000] bg-[#fffdf5]"
-            : "border-gray-200 focus-within:border-black"
+            : "border-gray-200 focus-within:border-black focus-within:ring-2 focus-within:ring-[#ffc000]"
         }`}
       >
         <textarea
           value={text}
           onChange={(e) => onChangeText(e.target.value)}
-          className="w-full h-full min-h-48 md:min-h-80 p-4 font-mono text-xs text-gray-800 bg-transparent resize-none focus:outline-none border-none"
+          className="w-full h-full min-h-48 md:min-h-80 p-4 font-mono text-xs text-gray-800 bg-transparent resize-none focus:outline-none border-none focus:ring-0"
           placeholder="Paste raw noisy text here. The system will classify each paragraph as content or noise, then reconstruct a clean version. You can also drag and drop a .txt file directly."
         />
 
