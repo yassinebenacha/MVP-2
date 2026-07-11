@@ -8,7 +8,16 @@ import {
   BarChart2
 } from "lucide-react";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { auth } from "../firebase";
+import { 
+  collection, 
+  addDoc, 
+  serverTimestamp, 
+  writeBatch, 
+  query, 
+  where, 
+  getDocs 
+} from "firebase/firestore";
+import { auth, db } from "../firebase";
 import AuthModal from "./components/AuthModal";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -16,6 +25,7 @@ import RawInput from "./components/RawInput";
 import ModelSelection from "./components/ModelSelection";
 import PipelineVisualization from "./components/PipelineVisualization";
 import ResultsDashboard from "./components/ResultsDashboard";
+import AccountView from "./components/AccountView";
 import { CleaningResult } from "./types";
 import { useToast } from "./components/Toast";
 import { useFocusTrap } from "./hooks/useFocusTrap";
@@ -55,11 +65,16 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   const [activeStepIndex, setActiveStepIndex] = useState(-1);
   const [cleaningResult, setCleaningResult] = useState<CleaningResult | null>(null);
   const [warning, setWarning] = useState<string | undefined>(undefined);
-  const [activeModal, setActiveModal] = useState<"research" | "methodology" | "documentation" | "affiliations" | "privacy" | "terms" | "contact" | null>(null);
+  const [activeModal, setActiveModal] = useState<"research" | "methodology" | "documentation" | "affiliations" | "privacy" | "terms" | "contact" | "clearHistory" | null>(null);
   
   // Firebase Auth states
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [clearHistoryTrigger, setClearHistoryTrigger] = useState(0);
+
+  // Hash Routing state
+  const [currentPath, setCurrentPath] = useState(window.location.hash || "#/");
 
   const { toast } = useToast();
   const modalContainerRef = useRef<HTMLDivElement>(null);
@@ -69,19 +84,58 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   useFocusTrap(activeModal !== null, modalContainerRef, () => setActiveModal(null));
 
   useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash || "#/");
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setIsAuthLoading(false);
     });
     return () => unsubscribe();
   }, []);
+
+  // Silent redirect to home if unauthenticated user tries to access /account
+  useEffect(() => {
+    if (!isAuthLoading && currentPath === "#/account" && !user) {
+      window.location.hash = "#/";
+    }
+  }, [currentPath, user, isAuthLoading]);
 
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       toast("Signed out successfully!", "info");
+      window.location.hash = "#/";
     } catch (err) {
       console.error("Sign out error:", err);
       toast("An error occurred during sign out.", "error");
+    }
+  };
+
+  const handleClearHistory = async () => {
+    if (!user) return;
+    try {
+      const historyColl = collection(db, "analysisHistory");
+      const q = query(historyColl, where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      
+      const batch = writeBatch(db);
+      querySnapshot.forEach((docSnap) => {
+        batch.delete(docSnap.ref);
+      });
+      
+      await batch.commit();
+      setClearHistoryTrigger((prev) => prev + 1);
+      setActiveModal(null);
+      toast("All analysis history has been cleared.", "success");
+    } catch (err) {
+      console.error("Error clearing history:", err);
+      toast("Failed to clear history. Please try again.", "error");
     }
   };
 
@@ -130,6 +184,8 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
     let apiResolved = false;
     let apiError: string | null = null;
     let apiData: any = null;
+
+    const pipelineStartTime = performance.now();
 
     // Step stepping interval - syncs with API resolution
     const stepTimer = setInterval(() => {
@@ -181,6 +237,23 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
 
       if (response.ok) {
         apiData = data;
+        
+        // Save to Firestore automatically if user is logged in
+        if (user) {
+          try {
+            const timeTaken = Math.round(performance.now() - pipelineStartTime);
+            await addDoc(collection(db, "analysisHistory"), {
+              userId: user.uid,
+              model: selectedModel,
+              createdAt: serverTimestamp(),
+              processingTime: timeTaken,
+              segmentCount: data.metrics?.totalSegments || data.segments?.length || 0,
+              cleaningRatio: data.metrics?.cleaningRatio || 0
+            });
+          } catch (historyErr) {
+            console.error("Failed to write to analysisHistory:", historyErr);
+          }
+        }
       } else {
         apiError = data.error || "A server error occurred during cleaning.";
       }
@@ -202,6 +275,8 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
     }
   };
 
+  const showAccount = !isAuthLoading && currentPath === "#/account" && user;
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-[#ffdf9e] selection:text-black overflow-x-hidden">
       {/* Top Banner Navigation */}
@@ -212,110 +287,124 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
         onSignOut={handleSignOut}
       />
 
-      {/* Hero Section */}
-      <section className="bg-white border-b border-gray-100 py-10 md:py-16 px-4 md:px-6 relative overflow-hidden">
-        {/* Subtle decorative dot grid background */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-          backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
-          backgroundSize: "20px 20px"
-        }} />
-        
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-mono mb-4 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#ffc000] fill-[#ffc000]" />
-            <span>NLP Preprocessing</span>
-          </div>
-
-          <h1 className="font-sans font-black text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-4 md:mb-6">
-            Text Segment{" "}
-            <span className="relative inline-block text-gray-950 font-black">
-              <span className="relative z-10 px-1 underline decoration-4 decoration-[#ffc000] decoration-skip-ink">
-                {typedWord}
-              </span>
-            </span>{" "}
-            for NLP Pipelines
-          </h1>
-
-          <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Segment raw web text, encode with MiniLM, classify with Linear SVM or Logistic Regression, and reconstruct clean text for downstream NLP systems.
-          </p>
-        </div>
-      </section>
-
-      {/* Primary Workspace */}
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 md:px-6 py-6 md:py-10 space-y-6 md:space-y-8">
-        {/* Input & Model Configuration Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Panel: Raw Input */}
-          <RawInput
-            text={inputText}
-            onChangeText={setInputText}
-            onSelectTemplate={(tpl) => {
-              setInputText(tpl);
-              setCleaningResult(null);
-            }}
-          />
-
-          {/* Right Panel: Model Selection */}
-          <ModelSelection
-            selectedModel={selectedModel}
-            onSelectModel={setSelectedModel}
-            onRunPipeline={handleRunPipeline}
-            isProcessing={isProcessing}
-          />
-        </div>
-
-        {/* Pipeline Progress Visualizer */}
-        <PipelineVisualization
-          isProcessing={isProcessing}
-          activeStepIndex={activeStepIndex}
+      {showAccount ? (
+        <AccountView
+          user={user}
+          onSignOut={handleSignOut}
+          onNavigateHome={() => {
+            window.location.hash = "#/";
+          }}
+          onTriggerClearHistoryModal={() => setActiveModal("clearHistory")}
+          clearHistoryTrigger={clearHistoryTrigger}
         />
+      ) : (
+        <>
+          {/* Hero Section */}
+          <section className="bg-white border-b border-gray-100 py-10 md:py-16 px-4 md:px-6 relative overflow-hidden">
+            {/* Subtle decorative dot grid background */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+              backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
+              backgroundSize: "20px 20px"
+            }} />
+            
+            <div className="max-w-4xl mx-auto text-center relative z-10">
+              <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-mono mb-4 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-[#ffc000] fill-[#ffc000]" />
+                <span>NLP Preprocessing</span>
+              </div>
 
-        {/* Results Panel */}
-        <div ref={resultsRef} className="scroll-mt-6">
-          <ResultsDashboard
-            result={cleaningResult}
-            selectedModelName={getModelFriendlyName(selectedModel)}
-            warning={warning}
-            onRunDemo={handleRunDemo}
-          />
-        </div>
-      </main>
+              <h1 className="font-sans font-black text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-4 md:mb-6">
+                Text Segment{" "}
+                <span className="relative inline-block text-gray-950 font-black">
+                  <span className="relative z-10 px-1 underline decoration-4 decoration-[#ffc000] decoration-skip-ink">
+                    {typedWord}
+                  </span>
+                </span>{" "}
+                for NLP Pipelines
+              </h1>
 
-      {/* Bottom Information Segment / Thesis Showcase */}
-      <section className="bg-white border-t border-gray-100 py-8 md:py-12 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
-              <FileText className="text-[#795900] w-5 h-5" />
+              <p className="font-sans text-sm md:text-base text-gray-500 max-w-2xl mx-auto leading-relaxed">
+                Segment raw web text, encode with MiniLM, classify with Linear SVM or Logistic Regression, and reconstruct clean text for downstream NLP systems.
+              </p>
             </div>
-            <h4 className="font-sans font-bold text-gray-900 text-sm">Text Segmentation</h4>
-            <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Raw text is split into paragraph-level segments, each processed independently through embedding and classification.
-            </p>
-          </div>
+          </section>
 
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
-              <Bot className="text-[#795900] w-5 h-5" />
-            </div>
-            <h4 className="font-sans font-bold text-gray-900 text-sm">MiniLM Embedding</h4>
-            <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Each segment is encoded into a 384-dimensional multilingual semantic embedding using SentenceTransformer with paraphrase-multilingual-MiniLM-L12-v2.
-            </p>
-          </div>
+          {/* Primary Workspace */}
+          <main className="flex-grow max-w-7xl mx-auto w-full px-4 md:px-6 py-6 md:py-10 space-y-6 md:space-y-8">
+            {/* Input & Model Configuration Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Panel: Raw Input */}
+              <RawInput
+                text={inputText}
+                onChangeText={setInputText}
+                onSelectTemplate={(tpl) => {
+                  setInputText(tpl);
+                  setCleaningResult(null);
+                }}
+              />
 
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
-              <BarChart2 className="text-[#795900] w-5 h-5" />
+              {/* Right Panel: Model Selection */}
+              <ModelSelection
+                selectedModel={selectedModel}
+                onSelectModel={setSelectedModel}
+                onRunPipeline={handleRunPipeline}
+                isProcessing={isProcessing}
+              />
             </div>
-            <h4 className="font-sans font-bold text-gray-900 text-sm">Supervised Classification</h4>
-            <p className="text-xs text-gray-500 font-sans leading-relaxed">
-              Linear SVM and Logistic Regression classifiers separate Content from Noise segments in the MiniLM embedding space.
-            </p>
-          </div>
-        </div>
-      </section>
+
+            {/* Pipeline Progress Visualizer */}
+            <PipelineVisualization
+              isProcessing={isProcessing}
+              activeStepIndex={activeStepIndex}
+            />
+
+            {/* Results Panel */}
+            <div ref={resultsRef} className="scroll-mt-6">
+              <ResultsDashboard
+                result={cleaningResult}
+                selectedModelName={getModelFriendlyName(selectedModel)}
+                warning={warning}
+                onRunDemo={handleRunDemo}
+              />
+            </div>
+          </main>
+
+          {/* Bottom Information Segment / Thesis Showcase */}
+          <section className="bg-white border-t border-gray-100 py-8 md:py-12 px-4 md:px-6">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
+                  <FileText className="text-[#795900] w-5 h-5" />
+                </div>
+                <h4 className="font-sans font-bold text-gray-900 text-sm">Text Segmentation</h4>
+                <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                  Raw text is split into paragraph-level segments, each processed independently through embedding and classification.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
+                  <Bot className="text-[#795900] w-5 h-5" />
+                </div>
+                <h4 className="font-sans font-bold text-gray-900 text-sm">MiniLM Embedding</h4>
+                <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                  Each segment is encoded into a 384-dimensional multilingual semantic embedding using SentenceTransformer with paraphrase-multilingual-MiniLM-L12-v2.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
+                  <BarChart2 className="text-[#795900] w-5 h-5" />
+                </div>
+                <h4 className="font-sans font-bold text-gray-900 text-sm">Supervised Classification</h4>
+                <p className="text-xs text-gray-500 font-sans leading-relaxed">
+                  Linear SVM and Logistic Regression classifiers separate Content from Noise segments in the MiniLM embedding space.
+                </p>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
       {/* Footer Segment */}
       <Footer onShowModal={setActiveModal} />
@@ -343,11 +432,12 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                   {activeModal === "privacy" && "Privacy Policy"}
                   {activeModal === "terms" && "Terms of Service"}
                   {activeModal === "contact" && "Contact"}
+                  {activeModal === "clearHistory" && "Clear Analysis History"}
                 </h3>
               </div>
               <button
                 onClick={() => setActiveModal(null)}
-                className="text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none"
+                className="text-gray-400 hover:text-black p-1 hover:bg-gray-50 rounded focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
                 aria-label="Close modal dialog"
               >
                 <X className="w-5 h-5" />
@@ -492,16 +582,44 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
                   </ul>
                 </div>
               )}
+
+              {activeModal === "clearHistory" && (
+                <div className="space-y-3 font-sans">
+                  <p className="text-sm text-gray-700">
+                    Are you sure you want to clear your entire analysis history? This action is permanent and cannot be undone.
+                  </p>
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded text-xs text-amber-800">
+                    Note: Only your saved metadata history log will be cleared. Raw input text and clean output documents are never stored in our systems.
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end sticky bottom-0">
-              <button
-                onClick={() => setActiveModal(null)}
-                className="bg-black hover:bg-gray-800 text-white font-bold px-4 py-2 rounded text-xs transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
-              >
-                Close
-              </button>
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2 sticky bottom-0">
+              {activeModal === "clearHistory" ? (
+                <>
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="bg-transparent border border-gray-300 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleClearHistory}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-xs font-bold transition-all focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none cursor-pointer shadow-sm hover:shadow"
+                  >
+                    Clear All
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setActiveModal(null)}
+                  className="bg-black hover:bg-gray-800 text-white font-bold px-4 py-2 rounded text-xs transition-all focus-visible:ring-2 focus-visible:ring-[#ffc000] focus-visible:outline-none cursor-pointer"
+                >
+                  Close
+                </button>
+              )}
             </div>
           </div>
         </div>
