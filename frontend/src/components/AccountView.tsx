@@ -51,14 +51,19 @@ export default function AccountView({
   const fetchAccountData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    console.log("[History] fetchAccountData started for user:", user.uid);
     try {
       // 1. Fetch total count of analyses via aggregation query
       const historyColl = collection(db, "analysisHistory");
+      console.log("[History] Running getCountFromServer on analysisHistory where userId == ", user.uid);
       const qCount = query(historyColl, where("userId", "==", user.uid));
       const countSnapshot = await getCountFromServer(qCount);
-      setTotalAnalyses(countSnapshot.data().count);
+      const countVal = countSnapshot.data().count;
+      console.log("[History] getCountFromServer succeeded. Count:", countVal);
+      setTotalAnalyses(countVal);
 
       // 2. Fetch last 50 analyses ordered by creation time descending
+      console.log("[History] Running getDocs query on analysisHistory...");
       const qHistory = query(
         historyColl,
         where("userId", "==", user.uid),
@@ -66,6 +71,8 @@ export default function AccountView({
         limit(50)
       );
       const historySnapshot = await getDocs(qHistory);
+      console.log("[History] getDocs query completed. Documents count:", historySnapshot.size);
+      
       const items: HistoryItem[] = [];
       historySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
@@ -80,7 +87,7 @@ export default function AccountView({
       });
       setHistory(items);
     } catch (err: any) {
-      console.error("Failed to load account data:", err);
+      console.error("[History] fetchAccountData failed with complete Firebase error:", err);
       const isDev = import.meta.env.DEV;
       setError(
         isDev

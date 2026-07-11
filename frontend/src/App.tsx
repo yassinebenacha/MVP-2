@@ -237,20 +237,34 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
 
       if (response.ok) {
         apiData = data;
+        console.log("[Pipeline] API execution completed successfully. Data received:", data);
         
         // Save to Firestore in background without blocking the critical path
+        console.log("[Pipeline] Current user state:", user);
         if (user) {
+          console.log("[Pipeline] User is authenticated. Preparing to write to analysisHistory.");
           const timeTaken = Math.round(performance.now() - pipelineStartTime);
-          addDoc(collection(db, "analysisHistory"), {
+          const historyPayload = {
             userId: user.uid,
             model: selectedModel,
             createdAt: serverTimestamp(),
             processingTime: timeTaken,
             segmentCount: data.metrics?.totalSegments || data.segments?.length || 0,
             cleaningRatio: data.metrics?.cleaningRatio || 0
-          }).catch((historyErr) => {
-            console.error("Failed to write to analysisHistory in background:", historyErr);
-          });
+          };
+          console.log("[Pipeline] Firestore collection name: 'analysisHistory'");
+          console.log("[Pipeline] Writing payload:", historyPayload);
+          console.log("[Pipeline] Invoking addDoc()...");
+          
+          addDoc(collection(db, "analysisHistory"), historyPayload)
+            .then((docRef) => {
+              console.log("[Pipeline] addDoc() succeeded! Document ID:", docRef.id);
+            })
+            .catch((historyErr) => {
+              console.error("[Pipeline] addDoc() failed with complete Firebase error:", historyErr);
+            });
+        } else {
+          console.log("[Pipeline] Write skipped: User is not authenticated.");
         }
       } else {
         apiError = data.error || "A server error occurred during cleaning.";
