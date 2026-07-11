@@ -238,21 +238,19 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
       if (response.ok) {
         apiData = data;
         
-        // Save to Firestore automatically if user is logged in
+        // Save to Firestore in background without blocking the critical path
         if (user) {
-          try {
-            const timeTaken = Math.round(performance.now() - pipelineStartTime);
-            await addDoc(collection(db, "analysisHistory"), {
-              userId: user.uid,
-              model: selectedModel,
-              createdAt: serverTimestamp(),
-              processingTime: timeTaken,
-              segmentCount: data.metrics?.totalSegments || data.segments?.length || 0,
-              cleaningRatio: data.metrics?.cleaningRatio || 0
-            });
-          } catch (historyErr) {
-            console.error("Failed to write to analysisHistory:", historyErr);
-          }
+          const timeTaken = Math.round(performance.now() - pipelineStartTime);
+          addDoc(collection(db, "analysisHistory"), {
+            userId: user.uid,
+            model: selectedModel,
+            createdAt: serverTimestamp(),
+            processingTime: timeTaken,
+            segmentCount: data.metrics?.totalSegments || data.segments?.length || 0,
+            cleaningRatio: data.metrics?.cleaningRatio || 0
+          }).catch((historyErr) => {
+            console.error("Failed to write to analysisHistory in background:", historyErr);
+          });
         }
       } else {
         apiError = data.error || "A server error occurred during cleaning.";

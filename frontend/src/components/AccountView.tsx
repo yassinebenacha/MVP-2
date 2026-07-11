@@ -41,6 +41,7 @@ export default function AccountView({
   clearHistoryTrigger
 }: AccountViewProps) {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [totalAnalyses, setTotalAnalyses] = useState<number | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -49,6 +50,7 @@ export default function AccountView({
 
   const fetchAccountData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       // 1. Fetch total count of analyses via aggregation query
       const historyColl = collection(db, "analysisHistory");
@@ -77,8 +79,9 @@ export default function AccountView({
         });
       });
       setHistory(items);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load account data:", err);
+      setError("Failed to load analysis history. Please check composite index configuration in Firestore or network permissions.");
       toast("Error loading history. Please check connection and refresh.", "error");
     } finally {
       setLoading(false);
@@ -198,6 +201,10 @@ export default function AccountView({
           <div className="flex flex-col items-center justify-center py-12 text-gray-400">
             <Loader2 className="w-8 h-8 animate-spin mb-2" />
             <span className="text-xs font-mono">Loading history log...</span>
+          </div>
+        ) : error ? (
+          <div className="py-12 text-center text-red-500 font-mono text-xs">
+            {error}
           </div>
         ) : history.length === 0 ? (
           <div className="py-12 text-center">
