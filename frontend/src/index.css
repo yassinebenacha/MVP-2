@@ -6,6 +6,13 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
+@layer base {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
 @layer utilities {
   /* Typing Cursor effect */
   .typing-cursor {

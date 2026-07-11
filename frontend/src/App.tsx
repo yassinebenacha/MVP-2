@@ -170,7 +170,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-[#ffdf9e] selection:text-black">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-[#ffdf9e] selection:text-black overflow-x-hidden">
       {/* Top Banner Navigation */}
       <Header
         onShowModal={setActiveModal}
@@ -180,7 +180,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
       />
 
       {/* Hero Section */}
-      <section className="bg-white border-b border-gray-100 py-16 px-6 relative overflow-hidden">
+      <section className="bg-white border-b border-gray-100 py-10 md:py-16 px-4 md:px-6 relative overflow-hidden">
         {/* Subtle decorative dot grid background */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
           backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
@@ -193,7 +193,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             <span>NLP Preprocessing</span>
           </div>
 
-          <h1 className="font-sans font-black text-4xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-6">
+          <h1 className="font-sans font-black text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight leading-none mb-4 md:mb-6">
             Text Segment{" "}
             <span className="relative inline-block text-gray-950 font-black">
               <span className="relative z-10 px-1 underline decoration-4 decoration-[#ffc000] decoration-skip-ink">
@@ -210,7 +210,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
       </section>
 
       {/* Primary Workspace */}
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-10 space-y-8">
+      <main className="flex-grow max-w-7xl mx-auto w-full px-4 md:px-6 py-6 md:py-10 space-y-6 md:space-y-8">
         {/* Input & Model Configuration Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Panel: Raw Input */}
@@ -249,7 +249,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
       </main>
 
       {/* Bottom Information Segment / Thesis Showcase */}
-      <section className="bg-white border-t border-gray-100 py-12 px-6">
+      <section className="bg-white border-t border-gray-100 py-8 md:py-12 px-4 md:px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-2">
             <div className="w-10 h-10 rounded-lg bg-[#fffdf5] border border-[#ffdf9e] flex items-center justify-center">
@@ -291,7 +291,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
           <div className="bg-white rounded-md max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-xl border border-gray-100 flex flex-col">
             {/* Header */}
-            <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white">
+            <div className="flex justify-between items-center p-4 md:p-5 border-b border-gray-100 sticky top-0 bg-white">
               <div className="flex items-center gap-2">
                 <BookOpen className="text-[#795900] w-5 h-5" />
                 <h3 className="font-sans font-extrabold text-gray-900 uppercase tracking-wide text-xs">
@@ -313,7 +313,7 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-6 text-sm text-gray-600 leading-relaxed font-sans">
+            <div className="p-4 md:p-6 space-y-4 md:space-y-6 text-sm text-gray-600 leading-relaxed font-sans">
               {activeModal === "research" && (
                 <>
                   <p>

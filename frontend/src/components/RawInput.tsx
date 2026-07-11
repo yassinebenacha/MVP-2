@@ -117,9 +117,9 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
   };
 
   return (
-    <div id="raw-input-panel" className="border border-gray-200 bg-white p-5 rounded-md flex flex-col h-full shadow-sm">
+    <div id="raw-input-panel" className="border border-gray-200 bg-white p-4 md:p-5 rounded-md flex flex-col h-full shadow-sm">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 pb-2 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <FileText className="text-[#795900] w-5 h-5" />
           <h2 className="font-sans font-bold text-lg text-gray-900">Raw Text Segments</h2>
@@ -178,7 +178,7 @@ Copyright 2026 Harmony Technology. All rights reserved.`,
         <textarea
           value={text}
           onChange={(e) => onChangeText(e.target.value)}
-          className="w-full h-full min-h-[320px] p-4 font-mono text-xs text-gray-800 bg-transparent resize-none focus:outline-none border-none"
+          className="w-full h-full min-h-48 md:min-h-80 p-4 font-mono text-xs text-gray-800 bg-transparent resize-none focus:outline-none border-none"
           placeholder="Paste raw noisy text here. The system will classify each paragraph as content or noise, then reconstruct a clean version. You can also drag and drop a .txt file directly."
         />
 

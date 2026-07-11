@@ -15,8 +15,8 @@ interface FooterProps {
 export default function Footer({ onShowModal }: FooterProps) {
   return (
     <footer id="app-footer" className="bg-white border-t border-gray-100 py-8 mt-auto w-full">
-      <div className="flex flex-col md:flex-row justify-between items-center px-6 max-w-7xl mx-auto gap-4">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-col md:flex-row justify-between items-center px-4 md:px-6 max-w-7xl mx-auto gap-4">
+        <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
           <div className="font-extrabold text-lg text-gray-900 tracking-tight">
             NOISE<span className="text-[#ffc000]">CLEANER</span>
           </div>

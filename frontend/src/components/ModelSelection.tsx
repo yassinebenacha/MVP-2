@@ -36,7 +36,7 @@ export default function ModelSelection({
   ];
 
   return (
-    <div id="model-selection-panel" className="border border-gray-200 bg-white p-5 rounded-md flex flex-col h-full shadow-sm">
+    <div id="model-selection-panel" className="border border-gray-200 bg-white p-4 md:p-5 rounded-md flex flex-col h-full shadow-sm">
       <div className="mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
         <Cpu className="text-[#795900] w-5 h-5" />
         <h2 className="font-sans font-bold text-lg text-gray-900">Model Selection</h2>

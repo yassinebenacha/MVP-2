@@ -56,38 +56,38 @@ export default function ResultsDashboard({
       )}
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 border-b border-gray-100 bg-gray-50/70">
-        <div className="border-r border-gray-100 pr-4 last:border-none">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-5 border-b border-gray-100 bg-gray-50/70">
+        <div className="md:border-r border-gray-100 md:pr-4">
           <div className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider">
             Total Segments
           </div>
-          <div className="font-mono text-2xl font-bold text-gray-900 mt-1">
+          <div className="font-mono text-xl md:text-2xl font-bold text-gray-900 mt-1">
             {metrics.totalSegments.toLocaleString()}
           </div>
         </div>
-        <div className="border-r border-gray-100 pr-4 last:border-none">
+        <div className="md:border-r border-gray-100 md:pr-4">
           <div className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
             Noise Removed
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
           </div>
-          <div className="font-mono text-2xl font-bold text-red-600 mt-1">
+          <div className="font-mono text-xl md:text-2xl font-bold text-red-600 mt-1">
             {metrics.noiseRemoved.toLocaleString()}
           </div>
         </div>
-        <div className="border-r border-gray-100 pr-4 last:border-none">
+        <div className="md:border-r border-gray-100 md:pr-4">
           <div className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
             Remaining Content
             <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
           </div>
-          <div className="font-mono text-2xl font-bold text-green-600 mt-1">
+          <div className="font-mono text-xl md:text-2xl font-bold text-green-600 mt-1">
             {metrics.contentRetained.toLocaleString()}
           </div>
         </div>
-        <div className="pr-4">
+        <div className="md:pr-4">
           <div className="font-sans text-[10px] font-bold text-gray-400 uppercase tracking-wider">
             Cleaning Ratio
           </div>
-          <div className="font-mono text-2xl font-bold text-[#795900] mt-1">
+          <div className="font-mono text-xl md:text-2xl font-bold text-[#795900] mt-1">
             {metrics.cleaningRatio}%
           </div>
         </div>
@@ -96,8 +96,8 @@ export default function ResultsDashboard({
       {/* Split Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
         {/* Left: Original with classification labels */}
-        <div className="p-5 flex flex-col h-[480px]">
-          <div className="flex justify-between items-center mb-3">
+        <div className="p-4 md:p-5 flex flex-col md:h-[480px]">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-3">
             <div className="flex flex-col">
               <h3 className="font-sans font-bold text-sm text-gray-900">
                 Original Text with Labels
@@ -135,7 +135,7 @@ export default function ResultsDashboard({
                   }`}
                   title={seg.reason}
                 >
-                  <span className="break-all whitespace-pre-wrap pr-4">{seg.text}</span>
+                  <span className="break-words whitespace-pre-wrap pr-4">{seg.text}</span>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span
                       className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
@@ -154,8 +154,8 @@ export default function ResultsDashboard({
         </div>
 
         {/* Right: Cleaned Output */}
-        <div className="p-5 flex flex-col h-[480px]">
-          <div className="flex justify-between items-center mb-3">
+        <div className="p-4 md:p-5 flex flex-col md:h-[480px]">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-3">
             <div className="flex flex-col">
               <h3 className="font-sans font-bold text-sm text-gray-900">
                 Clean Reconstructed Text
