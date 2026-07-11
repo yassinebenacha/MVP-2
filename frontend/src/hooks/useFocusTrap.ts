@@ -1,10 +1,17 @@
-import { useEffect, RefObject } from "react";
+import { useEffect, RefObject, useRef } from "react";
 
 export function useFocusTrap(
   isOpen: boolean,
   containerRef: RefObject<HTMLElement | null>,
   onClose: () => void
 ) {
+  const onCloseRef = useRef(onClose);
+
+  // Keep the ref current value synced with the latest onClose reference
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!isOpen || !containerRef.current) return;
 
@@ -40,7 +47,7 @@ export function useFocusTrap(
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -79,5 +86,5 @@ export function useFocusTrap(
         previousActiveElement.focus();
       }
     };
-  }, [isOpen, containerRef, onClose]);
+  }, [isOpen, containerRef]);
 }
