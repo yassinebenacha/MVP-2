@@ -81,7 +81,12 @@ export default function AccountView({
       setHistory(items);
     } catch (err: any) {
       console.error("Failed to load account data:", err);
-      setError("Failed to load analysis history. Please check composite index configuration in Firestore or network permissions.");
+      const isDev = import.meta.env.DEV;
+      setError(
+        isDev
+          ? `Firebase Error [${err.code || "unknown"}]: ${err.message || String(err)}`
+          : "Failed to load analysis history. Please check your network connection or refresh the page."
+      );
       toast("Error loading history. Please check connection and refresh.", "error");
     } finally {
       setLoading(false);

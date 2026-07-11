@@ -18,8 +18,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['userId', 'model', 'createdAt', 'processingTime', 'segmentCount', 'cleaningRatio'])
         && request.resource.data.userId is string
         && request.resource.data.model is string
-        && request.resource.data.processingTime is int
-        && request.resource.data.segmentCount is int
+        && request.resource.data.processingTime is number
+        && request.resource.data.segmentCount is number
         && request.resource.data.cleaningRatio is number
         && request.resource.data.createdAt is timestamp;
 
