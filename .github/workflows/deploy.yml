@@ -1,0 +1,90 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Oracle Cloud VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          PROJECT_PATH: ${{ secrets.PROJECT_PATH }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          envs: PROJECT_PATH
+          script: |
+            # Enable bash safety: exit immediately if a command exits with a non-zero status
+            set -e
+
+            echo "Starting deployment process..."
+
+            # Navigate to the project directory
+            cd "$PROJECT_PATH"
+
+            # Capture the current commit hash before fetching/resetting
+            PREV_COMMIT=$(git rev-parse HEAD)
+
+            echo "Fetching latest changes and resetting main..."
+            git fetch --all
+            git reset --hard origin/main
+
+            # Capture the new commit hash after pull
+            NEW_COMMIT=$(git rev-parse HEAD)
+
+            # Determine which files changed between the previous and new commit
+            if [ "$PREV_COMMIT" != "$NEW_COMMIT" ]; then
+              NODE_LOCK_CHANGED=$(git diff --name-only "$PREV_COMMIT" "$NEW_COMMIT" | grep -E '^backend/package-lock.json$' || true)
+              PYTHON_REQ_CHANGED=$(git diff --name-only "$PREV_COMMIT" "$NEW_COMMIT" | grep -E '^backend/requirements.txt$' || true)
+            else
+              NODE_LOCK_CHANGED=""
+              PYTHON_REQ_CHANGED=""
+            fi
+
+            # 5. Frontend deployment
+            echo "Building Frontend..."
+            cd frontend
+            npm install
+            npm run build
+
+            # 6. Backend Node deployment
+            echo "Deploying Backend Node..."
+            cd ../backend
+            
+            # Update Node dependencies if package-lock.json changes or node_modules doesn't exist
+            if [ ! -d "node_modules" ] || [ -n "$NODE_LOCK_CHANGED" ]; then
+              echo "package-lock.json changed or node_modules missing. Installing Node dependencies..."
+              npm install
+            else
+              echo "package-lock.json is unchanged. Skipping npm install."
+            fi
+            
+            echo "Restarting PM2 process for backend..."
+            pm2 restart noisecleaner-backend
+
+            # 7. Backend Python deployment
+            echo "Deploying Backend Python..."
+            
+            # Activate Python virtual environment
+            source venv/bin/activate
+            
+            # Update Python dependencies if requirements.txt changes
+            if [ -n "$PYTHON_REQ_CHANGED" ]; then
+              echo "requirements.txt changed. Installing Python dependencies..."
+              pip install -r requirements.txt
+            else
+              echo "requirements.txt is unchanged. Skipping pip install."
+            fi
+            
+            echo "Restarting PM2 process for python api..."
+            pm2 restart noisecleaner-api
+
+            # 8. Display success message
+            echo "Deployment completed successfully"
