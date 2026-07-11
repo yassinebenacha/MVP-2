@@ -106,9 +106,18 @@ Footer: About Us | Privacy Policy | Terms of Service | Contact`;
     }
   }, [currentPath, user, isAuthLoading]);
 
+  const resetAppState = () => {
+    setInputText(""); // Clear raw input text
+    setCleaningResult(null); // Clear segments, embeddings, predictions, cleaned text, and metrics
+    setIsProcessing(false);
+    setActiveStepIndex(-1); // Reset pipeline progress
+    setWarning(undefined);
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
+      resetAppState();
       toast("Signed out successfully!", "info");
       window.location.hash = "#/";
     } catch (err) {
