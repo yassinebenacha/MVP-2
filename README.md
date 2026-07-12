@@ -2,25 +2,25 @@
 
 **Intelligent Web Content Noise Removal using Machine Learning**
 
-NOISECLEANER is a full-stack web application that automatically separates meaningful content from boilerplate noise in scraped web pages. It leverages multilingual SentenceTransformer embeddings with classical ML classifiers (Linear SVM and Logistic Regression) to deliver high-precision text cleaning for NLP pipelines — all behind a modern React interface with secure HTTPS deployment.
+NOISECLEANER is a full-stack web application that automatically separates meaningful content from boilerplate noise in scraped web pages. It leverages multilingual SentenceTransformer embeddings with classical ML classifiers (Linear SVM and Logistic Regression) to deliver high-precision text cleaning for NLP pipelines - all behind a modern React interface with secure HTTPS deployment.
 
-> **Engineering Internship Project** — Built with a production-grade architecture on Oracle Cloud Infrastructure.
+> **Engineering Internship Project** - Built with a production-grade architecture on Oracle Cloud Infrastructure.
 
 ---
 
 ## ✨ Features
 
-- **Automatic Web Content Cleaning** — Paste raw HTML or scraped text and receive clean, structured output
-- **Machine Learning Classification** — Two trained classifiers with real-time inference:
+- **Automatic Web Content Cleaning** - Paste raw HTML or scraped text and receive clean, structured output
+- **Machine Learning Classification** - Two trained classifiers with real-time inference:
   - Linear SVM
   - Logistic Regression
-- **Multilingual SentenceTransformer Embeddings** — Powered by `paraphrase-multilingual-MiniLM-L12-v2`
-- **Gemini LLM Fallback** — Optional Google Gemini integration for AI-powered classification
-- **REST API** — Clean JSON API with detailed segment-level analysis and confidence scores
-- **Modern React Interface** — Responsive SPA built with React 19, Vite, and Tailwind CSS
-- **Firebase Authentication** — Secure user authentication
-- **HTTPS Deployment** — Production SSL via Let's Encrypt
-- **Automatic CI/CD** — Zero-downtime deployments on every push to `main`
+- **Multilingual SentenceTransformer Embeddings** - Powered by `paraphrase-multilingual-MiniLM-L12-v2`
+- **Gemini LLM Fallback** - Optional Google Gemini integration for AI-powered classification
+- **REST API** - Clean JSON API with detailed segment-level analysis and confidence scores
+- **Modern React Interface** - Responsive SPA built with React 19, Vite, and Tailwind CSS
+- **Firebase Authentication** - Secure user authentication
+- **HTTPS Deployment** - Production SSL via Let's Encrypt
+- **Automatic CI/CD** - Zero-downtime deployments on every push to `main`
 
 ---
 
@@ -178,11 +178,11 @@ The application is hosted on **Oracle Cloud Infrastructure** on an Ubuntu Server
 | Component          | Role                                               |
 | ------------------ | -------------------------------------------------- |
 | **Ubuntu Server**  | Oracle Cloud VM running all services                |
-| **Nginx**          | Reverse proxy — terminates SSL, routes traffic      |
-| **PM2**            | Process manager — keeps Express and FastAPI alive   |
+| **Nginx**          | Reverse proxy - terminates SSL, routes traffic      |
+| **PM2**            | Process manager - keeps Express and FastAPI alive   |
 | **Let's Encrypt**  | Free, automated HTTPS certificates                 |
-| **DuckDNS**        | Dynamic DNS — maps `noisecleaner.duckdns.org`       |
-| **GitHub Actions**  | CI/CD — triggers deployment on every push to `main` |
+| **DuckDNS**        | Dynamic DNS - maps `noisecleaner.duckdns.org`       |
+| **GitHub Actions**  | CI/CD - triggers deployment on every push to `main` |
 
 ### PM2 Managed Processes
 
@@ -369,9 +369,3 @@ Health check endpoint for monitoring.
 Engineering Internship Project · [Harmony Technology](https://harmony-technology.com)
 
 ---
-
-<div align="center">
-
-Built with ❤️ using React, FastAPI, and Machine Learning
-
-</div>
